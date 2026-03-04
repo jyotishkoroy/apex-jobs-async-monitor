@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+  <apiVersion>60.0</apiVersion>
+  <isExposed>true</isExposed>
+  <masterLabel>Apex Jobs &amp; Async Monitor</masterLabel>
+  <description>Dashboards for AsyncApexJob and scheduled jobs, with drill-down and export.</description>
+  <targets>
+    <target>lightning__AppPage</target>
+    <target>lightning__HomePage</target>
+    <target>lightning__UtilityBar</target>
+  </targets>
+  <targetConfigs>
+    <targetConfig targets="lightning__UtilityBar">
+      <property name="utilityLabel" type="String" default="Apex Jobs Monitor"/>
+      <property name="utilityIcon" type="String" default="custom:custom53"/>
+      <property name="panelWidth" type="Integer" default="420"/>
+      <property name="panelHeight" type="Integer" default="640"/>
+    </targetConfig>
+  </targetConfigs>
+</LightningComponentBundle>

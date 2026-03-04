@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+  <label>Apex Jobs &amp; Async Monitor</label>
+  <description>Grants required access for the Apex Jobs &amp; Async Monitor LWC (setup visibility). Optional job-abort requires the org's equivalent of "Manage Apex Jobs".</description>
+
+  <userPermissions>
+    <enabled>true</enabled>
+    <name>ViewSetup</name>
+  </userPermissions>
+
+  <tabSettings>
+    <tab>Apex_Jobs_Async_Monitor</tab>
+    <visibility>Visible</visibility>
+  </tabSettings>
+</PermissionSet>

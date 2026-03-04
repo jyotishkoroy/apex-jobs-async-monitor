@@ -1,0 +1,229 @@
+<template>
+    <div class="ajam">
+        <header class="ajam__header slds-p-around_medium">
+            <div class="ajam__brand">
+                <div class="ajam__title slds-text-heading_medium">Apex Jobs &amp; Async Monitor</div>
+                <div class="ajam__subtitle slds-text-body_small">
+                    Dashboards for <span class="ajam__mono">AsyncApexJob</span> and scheduled jobs — with drill-down &amp; export.
+                </div>
+            </div>
+
+            <div class="ajam__headerActions">
+                <lightning-button label="Refresh" variant="brand" onclick={handleRefresh}></lightning-button>
+                <lightning-input class="ajam__toggle" type="toggle" label="Auto-refresh" checked={autoRefresh}
+                    onchange={handleToggleAutoRefresh}></lightning-input>
+            </div>
+        </header>
+
+        <template if:true={hasAccessWarning}>
+            <div class="slds-notify slds-notify_alert slds-alert_warning ajam__alert" role="alert">
+                <span class="slds-assistive-text">warning</span>
+                <span>{accessInfo.message}</span>
+            </div>
+        </template>
+
+        <div class="ajam__body slds-p-around_medium">
+            <lightning-tabset>
+                <lightning-tab label="Overview">
+                    <template if:true={summary}>
+                        <div class="slds-grid slds-wrap slds-gutters_small ajam__kpis">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                                <div class="ajam__kpiCard">
+                                    <div class="ajam__kpiLabel">Total (last {hoursBack}h)</div>
+                                    <div class="ajam__kpiValue">{summary.totalJobs}</div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                                <div class="ajam__kpiCard">
+                                    <div class="ajam__kpiLabel">Active</div>
+                                    <div class="ajam__kpiValue ajam__kpiValue--active">{summary.activeJobs}</div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                                <div class="ajam__kpiCard">
+                                    <div class="ajam__kpiLabel">Failed</div>
+                                    <div class="ajam__kpiValue ajam__kpiValue--failed">{summary.failedJobs}</div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                                <div class="ajam__kpiCard">
+                                    <div class="ajam__kpiLabel">Error-heavy</div>
+                                    <div class="ajam__kpiValue ajam__kpiValue--warn">{summary.errorJobs}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-wrap slds-gutters_medium slds-m-top_medium">
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                                <div class="ajam__panel">
+                                    <div class="ajam__panelHeader">By Status</div>
+                                    <div class="ajam__chipGrid">
+                                        <template for:each={summary.byStatusPairs} for:item="p">
+                                            <span key={p.key} class="ajam__chip">
+                                                <span class="ajam__chipKey">{p.key}</span>
+                                                <span class="ajam__chipVal">{p.value}</span>
+                                            </span>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                                <div class="ajam__panel">
+                                    <div class="ajam__panelHeader">By Type</div>
+                                    <div class="ajam__chipGrid">
+                                        <template for:each={summary.byTypePairs} for:item="p">
+                                            <span key={p.key} class="ajam__chip">
+                                                <span class="ajam__chipKey">{p.key}</span>
+                                                <span class="ajam__chipVal">{p.value}</span>
+                                            </span>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ajam__note slds-m-top_medium">
+                            Tip: use <strong>Auto-refresh</strong> while investigating transient failures, then disable it to reduce churn.
+                        </div>
+                    </template>
+
+                    <template if:false={summary}>
+                        <div class="ajam__empty">
+                            Summary not available yet.
+                        </div>
+                    </template>
+                </lightning-tab>
+
+                <lightning-tab label="Async Jobs">
+                    <div class="ajam__filters">
+                        <lightning-combobox label="Status" value={statusFilter} options={statusOptions}
+                            onchange={handleStatusChange}></lightning-combobox>
+
+                        <lightning-combobox label="Type" value={jobTypeFilter} options={jobTypeOptions}
+                            onchange={handleJobTypeChange}></lightning-combobox>
+
+                        <lightning-input type="number" label="Days back" min="1" max="30" value={daysBack}
+                            onchange={handleDaysBackChange}></lightning-input>
+
+                        <lightning-input type="toggle" label="Errors only" checked={errorsOnly}
+                            onchange={handleErrorsOnlyChange}></lightning-input>
+
+                        <lightning-input type="search" label="Search (Id / class)" value={asyncSearch}
+                            onchange={handleAsyncSearchChange}></lightning-input>
+
+                        <div class="ajam__filtersActions">
+                            <lightning-button label="Export CSV" onclick={exportAsyncCsv}></lightning-button>
+                        </div>
+                    </div>
+
+                    <div class="ajam__tableWrap">
+                        <lightning-datatable key-field="id" data={asyncRows} columns={columnsAsync}
+                            onrowaction={handleAsyncRowAction} hide-checkbox-column></lightning-datatable>
+                    </div>
+                </lightning-tab>
+
+                <lightning-tab label="Scheduled Jobs">
+                    <div class="ajam__filters">
+                        <lightning-combobox label="State" value={cronStateFilter} options={cronStateOptions}
+                            onchange={handleCronStateChange}></lightning-combobox>
+
+                        <lightning-input type="search" label="Search (name)" value={scheduledSearch}
+                            onchange={handleScheduledSearchChange}></lightning-input>
+
+                        <div class="ajam__filtersActions">
+                            <lightning-button label="Export CSV" onclick={exportScheduledCsv}></lightning-button>
+                        </div>
+                    </div>
+
+                    <div class="ajam__tableWrap">
+                        <lightning-datatable key-field="id" data={scheduledRows} columns={columnsScheduled}
+                            hide-checkbox-column></lightning-datatable>
+                    </div>
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+
+        <template if:true={isLoading}>
+            <div class="ajam__spinner">
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Details Modal -->
+        <template if:true={detailOpen}>
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Async job details"
+                class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container ajam__modal">
+                    <header class="slds-modal__header ajam__modalHeader">
+                        <h2 class="slds-text-heading_small">Async Job Details</h2>
+                        <button class="slds-button slds-button_icon slds-modal__close" title="Close"
+                            onclick={closeDetails}>
+                            <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                        </button>
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <template if:true={detail}>
+                            <div class="ajam__detailGrid">
+                                <div class="ajam__detailItem">
+                                    <div class="ajam__detailLabel">Job Id</div>
+                                    <div class="ajam__detailValue ajam__mono">{detail.job.id}</div>
+                                </div>
+                                <div class="ajam__detailItem">
+                                    <div class="ajam__detailLabel">Status</div>
+                                    <div class="ajam__detailValue">{detail.job.status}</div>
+                                </div>
+                                <div class="ajam__detailItem">
+                                    <div class="ajam__detailLabel">Type</div>
+                                    <div class="ajam__detailValue">{detail.job.jobType}</div>
+                                </div>
+                                <div class="ajam__detailItem">
+                                    <div class="ajam__detailLabel">Apex Class</div>
+                                    <div class="ajam__detailValue">{detail.job.apexClassName}</div>
+                                </div>
+                                <div class="ajam__detailItem">
+                                    <div class="ajam__detailLabel">Submitted</div>
+                                    <div class="ajam__detailValue">
+                                        <lightning-formatted-date-time value={detail.job.createdDate} year="numeric"
+                                            month="short" day="2-digit" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                    </div>
+                                </div>
+                                <div class="ajam__detailItem">
+                                    <div class="ajam__detailLabel">Completed</div>
+                                    <div class="ajam__detailValue">
+                                        <lightning-formatted-date-time value={detail.job.completedDate} year="numeric"
+                                            month="short" day="2-digit" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                    </div>
+                                </div>
+                                <div class="ajam__detailItem">
+                                    <div class="ajam__detailLabel">Processed / Total</div>
+                                    <div class="ajam__detailValue">{detail.job.jobItemsProcessed}/{detail.job.totalJobItems}</div>
+                                </div>
+                                <div class="ajam__detailItem">
+                                    <div class="ajam__detailLabel">Errors</div>
+                                    <div class="ajam__detailValue">{detail.job.numberOfErrors}</div>
+                                </div>
+                            </div>
+
+                            <div class="ajam__detailBlock slds-m-top_medium">
+                                <div class="ajam__detailLabel">Extended Status</div>
+                                <div class="ajam__detailStatus ajam__mono">{detail.job.extendedStatus}</div>
+                            </div>
+                        </template>
+
+                        <template if:false={detail}>
+                            <div class="ajam__empty">No details available.</div>
+                        </template>
+                    </div>
+
+                    <footer class="slds-modal__footer ajam__modalFooter">
+                        <lightning-button label="Copy Job Id" onclick={handleCopyDetailId}></lightning-button>
+                        <lightning-button label="Close" variant="brand" onclick={closeDetails}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>

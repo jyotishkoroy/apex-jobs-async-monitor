@@ -1,0 +1,272 @@
+:host {
+    display: block;
+    --ajam-radius: 16px;
+    --ajam-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    --ajam-border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.ajam {
+    position: relative;
+    background: linear-gradient(180deg, rgba(248, 250, 255, 1) 0%, rgba(255, 255, 255, 1) 55%);
+    border-radius: var(--ajam-radius);
+    overflow: hidden;
+    border: var(--ajam-border);
+}
+
+.ajam__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    background: radial-gradient(1200px 300px at 20% 0%, rgba(92, 123, 255, 0.16), transparent 60%),
+                radial-gradient(900px 300px at 80% 0%, rgba(0, 201, 170, 0.14), transparent 55%),
+                #ffffff;
+    border-bottom: var(--ajam-border);
+}
+
+.ajam__brand {
+    min-width: 240px;
+}
+
+.ajam__title {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.ajam__subtitle {
+    margin-top: 0.15rem;
+    opacity: 0.85;
+}
+
+.ajam__headerActions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ajam__toggle {
+    margin-top: 0.1rem;
+}
+
+.ajam__body {
+    position: relative;
+}
+
+.ajam__alert {
+    margin: 0.75rem 0.75rem 0 0.75rem;
+    border-radius: 12px;
+}
+
+.ajam__kpis {
+    margin-top: 0.25rem;
+}
+
+.ajam__kpiCard {
+    background: #ffffff;
+    border: var(--ajam-border);
+    border-radius: 14px;
+    box-shadow: var(--ajam-shadow);
+    padding: 0.9rem 1rem;
+    min-height: 88px;
+}
+
+.ajam__kpiLabel {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.72;
+}
+
+.ajam__kpiValue {
+    font-size: 1.8rem;
+    font-weight: 750;
+    margin-top: 0.25rem;
+    letter-spacing: -0.02em;
+}
+
+.ajam__kpiValue--active { color: #0b5cab; }
+.ajam__kpiValue--failed { color: #ba0517; }
+.ajam__kpiValue--warn { color: #8a6a00; }
+
+.ajam__panel {
+    background: #ffffff;
+    border: var(--ajam-border);
+    border-radius: var(--ajam-radius);
+    box-shadow: var(--ajam-shadow);
+    padding: 1rem;
+}
+
+.ajam__panelHeader {
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+}
+
+.ajam__chipGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.ajam__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    border: var(--ajam-border);
+    background: rgba(248, 250, 255, 0.8);
+}
+
+.ajam__chipKey {
+    font-size: 0.8rem;
+    opacity: 0.85;
+}
+
+.ajam__chipVal {
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.ajam__note {
+    opacity: 0.85;
+}
+
+.ajam__filters {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(140px, 1fr)) auto;
+    gap: 0.75rem;
+    align-items: end;
+    padding: 0.25rem 0 0.9rem 0;
+}
+
+@media (max-width: 900px) {
+    .ajam__filters {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.ajam__filtersActions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.ajam__tableWrap {
+    border-radius: var(--ajam-radius);
+    overflow: hidden;
+    border: var(--ajam-border);
+    box-shadow: var(--ajam-shadow);
+    background: #ffffff;
+}
+
+.ajam__spinner {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(2px);
+    display: grid;
+    place-items: center;
+}
+
+.ajam__mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Datatable cell accents */
+.cell-status {
+    font-weight: 700;
+}
+.cell-status--failed {
+    color: #ba0517;
+}
+.cell-status--aborted {
+    color: #8a6a00;
+}
+.cell-status--processing {
+    color: #0b5cab;
+}
+.cell-status--queued {
+    color: #5c7bff;
+}
+.cell-status--completed {
+    color: #2e844a;
+}
+
+.cell-error {
+    color: #ba0517;
+    font-weight: 800;
+}
+
+/* Modal */
+.ajam__modal {
+    max-width: 900px;
+    width: 92vw;
+}
+
+.ajam__modalHeader {
+    border-bottom: var(--ajam-border);
+    background: #ffffff;
+}
+
+.ajam__modalFooter {
+    border-top: var(--ajam-border);
+    background: rgba(248, 250, 255, 0.6);
+}
+
+.ajam__detailGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 0.75rem 1.25rem;
+}
+
+@media (max-width: 700px) {
+    .ajam__detailGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ajam__detailItem {
+    border: var(--ajam-border);
+    border-radius: 12px;
+    padding: 0.75rem 0.85rem;
+    background: rgba(248, 250, 255, 0.65);
+}
+
+.ajam__detailLabel {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.75;
+}
+
+.ajam__detailValue {
+    margin-top: 0.25rem;
+    font-weight: 650;
+    word-break: break-word;
+}
+
+.ajam__detailBlock {
+    border: var(--ajam-border);
+    border-radius: 12px;
+    padding: 0.75rem 0.85rem;
+    background: #ffffff;
+}
+
+.ajam__detailStatus {
+    margin-top: 0.4rem;
+    white-space: pre-wrap;
+    max-height: 180px;
+    overflow: auto;
+    padding: 0.5rem;
+    border-radius: 10px;
+    border: var(--ajam-border);
+    background: rgba(248, 250, 255, 0.75);
+}
+
+.ajam__empty {
+    padding: 1rem;
+    border-radius: var(--ajam-radius);
+    border: var(--ajam-border);
+    background: #ffffff;
+    opacity: 0.85;
+}
